@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-atlassian
+  labels:
+    app: mcp-atlassian
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcp-atlassian
+  template:
+    metadata:
+      labels:
+        app: mcp-atlassian
+    spec:
+      containers:
+        - name: mcp-atlassian
+          image: quay.io/vajain/mcp-atlassian:4.0
+          imagePullPolicy: Always
+          args:
+            - '--port=8080'
+            - '--transport=sse'
+            - '--verbose'
+            - '--verbose'
+            - '--enabled-tools=jira_update_issue,jira_add_comment,jira_get_transitions,jira_transition_issue,jira_get_user_profile,jira_search'
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: mcp-atlassian-secrets
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+      restartPolicy: Always
